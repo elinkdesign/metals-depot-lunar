@@ -1,5 +1,12 @@
-<header class="relative border-b border-gray-100">
-    <div class="flex items-center justify-between h-16 px-4 mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
+<!-- TODO: FIX THIS HEADER STYLE -->
+<style>
+  .header-red-background {
+    background-color: red;
+  }
+</style>
+
+<header class="relative border-b border-gray-100 header-red-background">
+    <div class="flex items-center justify-between h-16 px-4 mx-auto max-w-screen-2xl text-white sm:px-6 lg:px-8">
         <div class="flex items-center">
             <a class="flex items-center flex-shrink-0"
                href="{{ url('/') }}">
