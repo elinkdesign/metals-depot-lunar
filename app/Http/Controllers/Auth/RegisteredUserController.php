@@ -45,38 +45,29 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
-        //TODO: move this to mobileRegister
-        // $token = $user->createToken('auth-token')->plainTextToken;
-
-        // if ($request->wantsJson()) {
-        //     return response()->json([
-        //         'user' => $user,
-        //         'token' => $token,
-        //     ]);
-        // }
 
         return redirect(RouteServiceProvider::HOME);
     }
 
-    // public function mobileRegister(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|confirmed|min:8',
-    //     ]);
+    public function mobileRegister(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|confirmed|min:8',
+        ]);
 
-    //     $user = User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //     ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-    //     $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth-token')->plainTextToken;
 
-    //     return response()->json([
-    //         'user' => $user,
-    //         'token' => $token,
-    //     ], 201);
-    // }
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
+    }
 }
