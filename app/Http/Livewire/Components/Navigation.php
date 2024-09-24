@@ -26,9 +26,15 @@ class Navigation extends Component
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
+    // TODO: Temp fix for duplicate collections, I'll fix this later
     public function getCollectionsProperty()
     {
-        return Collection::with(['defaultUrl'])->get()->toTree();
+        return Collection::with(['defaultUrl'])
+            ->get()
+            ->filter(function ($collection) {
+                return !str_ends_with($collection->defaultUrl->slug, '-2');
+            })
+            ->toTree();
     }
 
     public function render()
