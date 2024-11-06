@@ -78,12 +78,17 @@ class RegisteredUserController extends Controller
         Log::info('Verification code set', ['code' => $verificationCode]);
 
         try {
-            Mail::raw("Your verification code is: $verificationCode", function($message) use ($user) {
-                $message->to($user->email)->subject('Your Verification Code');
+            Mail::send('emails.verification-code', ['verificationCode' => $verificationCode], function($message) use ($user) {
+                $message->to($user->email)
+                        ->subject('Your Email Verification Code')
+                        ->from(config('mail.from.address'), config('mail.from.name'));
             });
             Log::info('Verification code sent successfully');
         } catch (\Exception $e) {
-            Log::error('Failed to send verification code', ['error' => $e->getMessage()]);
+            Log::error('Failed to send verification code', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -93,5 +98,48 @@ class RegisteredUserController extends Controller
             'user' => $user,
             'token' => $token
         ], 201);
+    }
+
+    /**
+     * Verify user's email with verification code.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyEmailWithCode(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'verification_code' => 'required|string',
+        ]);
+
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email already verified'
+            ], 422);
+        }
+
+        if ($user->verification_code !== $request->verification_code) {
+            return response()->json([
+                'message' => 'Invalid verification code'
+            ], 422);
+        }
+
+        $user->markEmailAsVerified();
+        $user->verification_code = null;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Email verified successfully',
+            'user' => $user
+        ], 200);
     }
 }

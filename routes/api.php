@@ -23,6 +23,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 // Public routes
 Route::post('/register', [RegisteredUserController::class, 'mobileRegister']);
 Route::post('/login', [AuthenticatedSessionController::class, 'mobileLogin']);
+Route::post('/mobile/verify-email', [RegisteredUserController::class, 'verifyEmailWithCode']);
 // Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
 //     ->name('password.email');
 // Route::post('/reset-password', [NewPasswordController::class, 'store'])
