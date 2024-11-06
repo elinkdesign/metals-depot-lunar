@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -107,8 +108,15 @@ class AuthenticatedSessionController extends Controller
             $user = Auth::user();
             $token = $user->createToken('auth-token')->plainTextToken;
 
+            $nameParts = explode(' ', $user->name, 2);
+            $responseUser = $user->toArray();
+            $responseUser['firstName'] = $nameParts[0];
+            $responseUser['lastName'] = $nameParts[1] ?? '';
+
+            unset($responseUser['name']);
+
             return response()->json([
-                'user' => $user,
+                'user' => $responseUser,
                 'token' => $token,
             ]);
         }

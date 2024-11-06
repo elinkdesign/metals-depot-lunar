@@ -61,21 +61,15 @@ class RegisteredUserController extends Controller
             'password' => 'required|string|confirmed|min:8',
         ]);
 
-        Log::info('Validation passed');
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        Log::info('User created', ['user_id' => $user->id]);
-
         $verificationCode = sprintf('%04d', mt_rand(0, 9999));
         $user->verification_code = $verificationCode;
         $user->save();
-
-        Log::info('Verification code set', ['code' => $verificationCode]);
 
         try {
             Mail::send('emails.verification-code', ['verificationCode' => $verificationCode], function($message) use ($user) {
@@ -93,9 +87,15 @@ class RegisteredUserController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        $nameParts = explode(' ', $user->name, 2);
+        $responseUser = $user->toArray();
+        $responseUser['firstName'] = $nameParts[0];
+        $responseUser['lastName'] = $nameParts[1] ?? '';
+        unset($responseUser['name']);
+
         return response()->json([
             'message' => 'User registered successfully. Please check your email for the verification code.',
-            'user' => $user,
+            'user' => $responseUser,
             'token' => $token
         ], 201);
     }
