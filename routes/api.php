@@ -7,8 +7,9 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\Api\AngleProductController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,5 +27,5 @@ Route::post('/login', [AuthenticatedSessionController::class, 'mobileLogin']);
 Route::post('/mobile/verify-email', [RegisteredUserController::class, 'verifyEmailWithCode']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/angle-products', [AngleProductController::class, 'index']);
+    Route::get('/products/{productType}', [ProductController::class, 'index']);
 });

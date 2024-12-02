@@ -7,23 +7,24 @@ use Illuminate\Http\Request;
 use Lunar\Models\Product;
 use Lunar\Models\ProductType;
 
-class AngleProductController extends Controller
+class ProductController extends Controller
 {
     /**
-     * Get all products with the product type "Angle".
+     * Get all products of a specific product type.
      *
      * @param Request $request
+     * @param string $productType
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request, string $productType)
     {
-        $angleProductType = ProductType::where('name', 'Angle')->first();
+        $productType = ProductType::where('name', $productType)->first();
 
-        if (!$angleProductType) {
-            return response()->json(['message' => 'Angle product type not found'], 404);
+        if (!$productType) {
+            return response()->json(['message' => "{$productType} product type not found"], 404);
         }
 
-        $products = Product::where('product_type_id', $angleProductType->id)
+        $products = Product::where('product_type_id', $productType->id)
             ->with([
                 'variants.prices',
                 'variants.values.option',
